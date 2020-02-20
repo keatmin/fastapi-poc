@@ -1,24 +1,17 @@
 import ktrain
-from ktrain import text as txt
-import pickle
 from typing import Dict, List
 
-from tensorflow.keras.backend import set_session
+
+MODEL_DIR = "models/depression_ai"
+learner_class = ["No depression", "Depression"]
 
 
 class DepressionAI:
     def __init__(self):
-        self.model, self.graph, self.sess, self.features = ktrain
-
-    def preprocess_text(self, text: str) -> List[float]:
-        vectorized_text = self.features.preprocess(text)
-        return vectorized_text
-
-    def predict(self, text: str) -> Dict[str]:
-        vec_query = self.preprocess_text(text)
-        with self.graph.as_default():
-            set_session(self.sess)
-            vec_cat = self.model.predict(vec_query)
-
-            predicted_index = vec_cat[0].argmax(axis=0)
-            return predicted_index
+        self.learner = ktrain.load_predictor(MODEL_DIR)
+        
+    def predict(self, text: str) -> Dict[str, str]:
+        probability = self.learner.predict(text,return_proba=True)
+        predicted_index = probability.argmax()
+        return {"result": learner_class[predicted_index],
+                "probability": probability[predicted_index]}

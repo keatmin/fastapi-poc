@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI
 from depressionAI import DepressionAI
 from typing import Dict
 from pydantic import BaseModel
@@ -18,5 +18,5 @@ class Prediction(BaseModel):
 
 
 @app.post("/api/v1/predict", response_model=Prediction)
-async def predict(req: ChatText) -> Dict[str,str]:
+async def predict(req: ChatText) -> Dict[str, str]:
     return learn.predict(req.text)
